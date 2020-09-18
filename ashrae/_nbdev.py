@@ -3,14 +3,22 @@
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"base_path": "00_leaderboard.ipynb",
-         "numpy_evaluate": "02_modelling.ipynb",
-         "evaluate_torch": "02_modelling.ipynb",
-         "get_Xy": "02_modelling.ipynb",
-         "radical_merging": "02_modelling.ipynb",
-         "split_dataset": "02_modelling.ipynb"}
+         "radical_merging": "02_preprocessing.ipynb",
+         "evaluate_torch": "03_modelling.ipynb",
+         "split_dataset": "03_modelling.ipynb",
+         "BoldlyWrongTimeseries": "03_modelling.ipynb",
+         "plot_boldly_wrong": "03_modelling.ipynb",
+         "BoldlyWrongTimeseries.plot_boldly_wrong": "03_modelling.ipynb",
+         "init_widgets": "03_modelling.ipynb",
+         "run_boldly": "03_modelling.ipynb",
+         "click_boldly_wrong": "03_modelling.ipynb",
+         "BoldlyWrongTimeseries.init_widgets": "03_modelling.ipynb",
+         "BoldlyWrongTimeseries.click_boldly_wrong": "03_modelling.ipynb",
+         "BoldlyWrongTimeseries.run_boldly": "03_modelling.ipynb"}
 
 modules = ["leaderboard.py",
            "inspection.py",
+           "preprocessing.py",
            "modelling.py"]
 
 doc_url = "https://eschmidt42.github.io/ashrae/"
