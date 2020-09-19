@@ -14,7 +14,9 @@ index = {"base_path": "00_leaderboard.ipynb",
          "click_boldly_wrong": "03_modelling.ipynb",
          "BoldlyWrongTimeseries.init_widgets": "03_modelling.ipynb",
          "BoldlyWrongTimeseries.click_boldly_wrong": "03_modelling.ipynb",
-         "BoldlyWrongTimeseries.run_boldly": "03_modelling.ipynb"}
+         "BoldlyWrongTimeseries.run_boldly": "03_modelling.ipynb",
+         "Swish": "03_modelling.ipynb",
+         "Sine": "03_modelling.ipynb"}
 
 modules = ["leaderboard.py",
            "inspection.py",
