@@ -26,10 +26,10 @@ index = {"base_path": "00_leaderboard.ipynb",
          "BoldlyWrongTimeseries.run_boldly": "02_preprocessing.ipynb",
          "BoldlyWrongTimeseries.click_boldly_wrong": "02_preprocessing.ipynb",
          "evaluate_torch": "03_modelling.ipynb",
+         "cnr": "03_modelling.ipynb",
          "split_dataset": "03_modelling.ipynb",
          "Swish": "03_modelling.ipynb",
-         "Sine": "03_modelling.ipynb",
-         "cnr": "03_modelling.ipynb"}
+         "Sine": "03_modelling.ipynb"}
 
 modules = ["leaderboard.py",
            "inspection.py",
