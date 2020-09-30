@@ -29,7 +29,8 @@ index = {"base_path": "00_leaderboard.ipynb",
          "cnr": "03_modelling.ipynb",
          "split_dataset": "03_modelling.ipynb",
          "Swish": "03_modelling.ipynb",
-         "Sine": "03_modelling.ipynb"}
+         "Sine": "03_modelling.ipynb",
+         "pick_random": "03_modelling.ipynb"}
 
 modules = ["leaderboard.py",
            "inspection.py",

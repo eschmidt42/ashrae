@@ -47,7 +47,7 @@ class Processor:
         self.dep_var = DEP_VAR if dep_var is None else dep_var
         self.time_col = TIME_COL if time_col is None else time_col
 
-        self.conts, self.cats = [], []
+        self.conts, self.cats, self.cats_order = [], [], {}
 
         # sanity check if `df` is a test set (dep_var is missing)
         self.is_train = self.dep_var in df_core.columns
@@ -102,10 +102,14 @@ class Processor:
 
     def add_time_features(self, df_core:pd.DataFrame):
         self.cats.extend(['timestampMonth', 'timestampDay', 'timestampWeek', 'timestampDayofweek',
-                     'timestampDayofyear', 'timestampIs_month_end', 'timestampIs_month_start',
-                     'timestampIs_quarter_start', 'timestampIs_quarter_end',
-                     'timestampIs_year_start', 'timestampIs_year_end',])
-        return add_datepart(df_core, self.time_col)
+                          'timestampDayofyear', 'timestampIs_month_end', 'timestampIs_month_start',
+                          'timestampIs_quarter_start', 'timestampIs_quarter_end',
+                          'timestampIs_year_start', 'timestampIs_year_end',])
+        df_core = add_datepart(df_core, self.time_col)
+        self.cats_order.update({c: sorted(df_core[c].unique()) for c in ['timestampMonth', 'timestampDay',
+                                               'timestampWeek', 'timestampDayofweek',
+                                               'timestampDayofyear']})
+        return df_core
 
     def add_building_features(self, df_core:pd.DataFrame, df_building:pd.DataFrame):
         n = len(df_core)
@@ -121,8 +125,9 @@ class Processor:
         df_core = pd.merge(df_core, df_weather, on=['site_id', 'timestamp'], how='left')
         assert n == len(df_core)
 
-        self.cats.extend(['cloud_coverage', 'wind_direction'])
-        self.conts.extend(['air_temperature', 'dew_temperature', 'precip_depth_1_hr',
+        self.cats.extend(['cloud_coverage'])
+        self.cats_order['cloud_coverage'] = sorted([v for v in df_core['cloud_coverage'].unique() if np.isfinite(v)])
+        self.conts.extend(['wind_direction', 'air_temperature', 'dew_temperature', 'precip_depth_1_hr',
                       'sea_level_pressure', 'wind_speed'])
         return df_core
 
@@ -130,10 +135,15 @@ class Processor:
         # converting cats to category type
         for col in self.cats:
             df_core[col] = df_core[col].astype('category')
+            if col in self.cats_order:
+                df_core[col].cat.set_categories(self.cats_order[col],
+                                                ordered=True, inplace=True)
 
         # removing features
         to_remove_cols = [self.dep_var, 'timestampYear', self.time_col]
         df_core = df_core.drop(columns=[c for c in df_core.columns if c in to_remove_cols])
+
+        # shrinking the data frame
         df_core = df_shrink(df_core, int2uint=True)
 
         var_names = {'conts': self.conts, 'cats': self.cats, 'dep_var': self.dep_var_new}
