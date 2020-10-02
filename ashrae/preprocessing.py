@@ -35,7 +35,10 @@ class Processor:
 
     def __call__(self, df_core:pd.DataFrame, df_building:pd.DataFrame=None,
                  df_weather:pd.DataFrame=None, dep_var:str=None, time_col:str=None,
-                 add_time_features:bool=False, add_dep_var_stats:bool=False) -> pd.DataFrame:
+                 add_time_features:bool=False, add_dep_var_stats:bool=False,
+                 remove_leading_zeros:bool=False, remove_trailing_zeros:bool=True,
+                 remove_empty_weeks_before_first_full_week:bool=True,
+                 t_train:pd.DataFrame=None) -> pd.DataFrame:
 
         # TODO:
         # - add daily features: temperature delta per site_id, total rain fall, ...
@@ -61,6 +64,22 @@ class Processor:
             df_core[self.dep_var_new] = np.log(df_core[self.dep_var].values + 1)
         self.cats += ['building_id', 'meter']
 
+        # add timestamp related fields
+        if add_time_features:
+            df_core = self.add_time_features(df_core)
+
+        # removing leading zeros
+        if remove_leading_zeros and self.is_train:
+            df_core = self.remove_leading_zeros(df_core, t_train=t_train)
+
+        # removing trailing zeros
+        if remove_trailing_zeros and self.is_train:
+            df_core = self.remove_trailing_zeros(df_core, t_train=t_train)
+
+        # removing weeks before the first full week
+        if remove_empty_weeks_before_first_full_week and self.is_train:
+            df_core = self.remove_empty_weeks_before_first_full_week(df_core, t_train=t_train)
+
         # adding basic statistics as features
         if add_dep_var_stats:
             df_core = self.add_dep_var_stats(df_core) # , grp_cols=['meter']
@@ -73,9 +92,6 @@ class Processor:
         if df_weather is not None:
             df_core = self.add_weather_features(df_core, df_weather)
 
-        # add timestamp related fields
-        if add_time_features:
-            df_core = self.add_time_features(df_core)
 
         df_core, var_names = self.cleanup(df_core)
         return df_core, var_names
@@ -154,6 +170,121 @@ class Processor:
         self.conts.extend(['wind_direction', 'air_temperature', 'dew_temperature', 'precip_depth_1_hr',
                       'sea_level_pressure', 'wind_speed'])
         return df_core
+
+    def remove_leading_zeros(self, df_core:pd.DataFrame, t_train:pd.DataFrame=None):
+        'there are time series which start with many 0 values in the dep_var. this method removes those values'
+
+        n = len(df_core)
+        assert self.dep_var in df_core.columns
+        assert 'timestamp' in df_core.columns
+        assert df_core[self.dep_var].min() == 0
+
+        # finding the first timestamps after 0s
+        mins = (df_core[df_core[self.dep_var] > 0].groupby(["building_id","meter"])
+                .timestamp.min().rename("first_timestamp"))
+        df_core = df_core.join(mins,on=["building_id","meter"])
+
+        mask = df_core['first_timestamp'] <= df_core['timestamp']
+
+        if t_train is not None:
+            t_mask = df_core['timestamp'].isin(t_train['timestamp'])
+            mask = (mask & t_mask) | ~t_mask
+
+        df_core = df_core.loc[mask,:]
+        df_core.drop(columns=['first_timestamp'], inplace=True)
+        assert len(df_core) < n
+        print(f'Removed {(1-len(df_core)/n)*100:.4f} % of rows')
+
+        return df_core
+
+
+    def remove_trailing_zeros(self, df_core:pd.DataFrame, t_train:pd.DataFrame=None):
+        'there are time series which end with many 0 values in the dep_var. this method removes those values'
+
+        n = len(df_core)
+        assert self.dep_var in df_core.columns
+        assert 'timestamp' in df_core.columns
+        assert df_core[self.dep_var].min() == 0
+
+        # finding the first timestamps after 0s
+        maxs = (df_core[df_core[self.dep_var] > 0].groupby(["building_id","meter"])
+                .timestamp.max().rename("last_timestamp"))
+        df_core = df_core.join(maxs,on=["building_id","meter"])
+
+        mask = df_core['last_timestamp'] >= df_core['timestamp']
+
+        if t_train is not None:
+            t_mask = df_core['timestamp'].isin(t_train['timestamp'])
+            mask = (mask & t_mask) | ~t_mask
+
+        df_core = df_core.loc[mask,:]
+        df_core.drop(columns=['last_timestamp'], inplace=True)
+        assert len(df_core) < n
+        print(f'Removed {(1-len(df_core)/n)*100:.4f} % of rows')
+
+        return df_core
+
+    def remove_empty_weeks_before_first_full_week(self, df_core:pd.DataFrame,
+                                                  t_train:pd.DataFrame):
+        'there are some timeseries with weeks in the beginning which are basically empty'
+        # TODO: something is likely buggy, losing combinations of building_id and meter
+
+        n = len(df_core)
+        n_comb = len(df_core.loc[:,['building_id', 'meter']].drop_duplicates())
+
+        def get_combs(df):
+            return set([tuple([row['building_id'], row['meter']])
+                                for _, row in (df.loc[:,['building_id', 'meter']]
+                                               .drop_duplicates()
+                                               .iterrows())])
+
+        combs = get_combs(df_core)
+
+        df_core['timestampWeek'] = df_core[self.time_col].dt.isocalendar().week
+
+        counts = (df_core[df_core[self.dep_var] > 0]
+                  .groupby(["building_id","meter","timestampWeek"])
+                  .timestamp.count()
+                  .rename("num_weekly_measurements").reset_index())
+
+        expected_num = 24*7 # hours per week with a measurement
+        expected_num *= 0.5
+
+        first_full_week = (counts[counts['num_weekly_measurements'] > expected_num]
+                           .groupby(["building_id","meter"])
+                           .timestampWeek.min()
+                           .rename("first_full_week")
+                           .to_frame())
+
+        df_core = df_core.join(first_full_week, on=["building_id","meter"])
+
+        mask = df_core['timestampWeek'] >= df_core['first_full_week']
+
+        na_series = df_core.loc[df_core['first_full_week'].isna(), ['building_id', 'meter']].drop_duplicates()
+
+        print('number of na combinations', len(na_series))
+        display('na bids & meters', len(na_series), na_series)
+
+        mask = mask & df_core['first_full_week'].notna() # some time series have in each week less than the required number of observations
+
+        if t_train is not None:
+            t_mask = df_core['timestamp'].isin(t_train['timestamp'])
+            mask = (mask & t_mask) | ~t_mask
+
+        df_core = df_core.loc[mask,:]
+
+        df_core.drop(columns=['timestampWeek', 'first_full_week'], inplace=True)
+
+        na_combs = get_combs(df_core)
+        miss_combs = [v for v in na_combs if v not in combs]
+        print('combs diff', miss_combs, len(miss_combs))
+
+        assert len(df_core) < n
+        assert len(na_series) == 38
+        print(f'Removed {(1-len(df_core)/n)*100:.4f} % of rows')
+        print(f'{len(na_series)} of building_id/meter combinations count as empty = {100 * len(na_series) / n_comb:.4f} % of all combinations')
+        return df_core
+
 
     def cleanup(self, df_core:pd.DataFrame):
         # converting cats to category type
