@@ -2,7 +2,7 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"base_path": "00_leaderboard.ipynb",
+index = {"data_path": "00_leaderboard.ipynb",
          "get_csvs": "01_inspection.ipynb",
          "CSV_NAMES": "01_inspection.ipynb",
          "get_core_Xy": "01_inspection.ipynb",
