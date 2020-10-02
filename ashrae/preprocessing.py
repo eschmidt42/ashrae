@@ -134,6 +134,7 @@ class Processor:
     def cleanup(self, df_core:pd.DataFrame):
         # converting cats to category type
         for col in self.cats:
+            if df_core[col].dtype == bool: continue
             df_core[col] = df_core[col].astype('category')
             if col in self.cats_order:
                 df_core[col].cat.set_categories(self.cats_order[col],
