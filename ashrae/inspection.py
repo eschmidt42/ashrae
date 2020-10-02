@@ -17,13 +17,12 @@ from fastai.tabular.all import *
 import matplotlib.pyplot as plt
 
 # Cell
-
 CSV_NAMES = ['building', 'sample_submission', 'test', 'train', 'weather_test', 'weather_train']
 
 def get_csvs(data_path:Path, csv_names:typing.List[str]=None) -> typing.Dict[str, Path]:
     csvs = sorted([v for v in data_path.ls() if v.name.endswith('.csv')])
     csv_names = CSV_NAMES if csv_names is None else csv_names
-    return {_name: [_csv for _csv in csvs if _csv.startswith(_name)] for _name in csv_names}
+    return {_name: [_csv for _csv in csvs if _csv.name.startswith(_name)] for _name in csv_names}
 
 # Cell
 def get_core_Xy(path:Path, nrows:int=None) -> pd.DataFrame:
