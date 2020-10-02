@@ -104,8 +104,9 @@ class Processor:
         self.cats.extend(['timestampMonth', 'timestampDay', 'timestampWeek', 'timestampDayofweek',
                           'timestampDayofyear', 'timestampIs_month_end', 'timestampIs_month_start',
                           'timestampIs_quarter_start', 'timestampIs_quarter_end',
-                          'timestampIs_year_start', 'timestampIs_year_end',])
-        df_core = add_datepart(df_core, self.time_col)
+                          'timestampIs_year_start', 'timestampIs_year_end', 'timestampHour'])
+        df_core = add_datepart(df_core, self.time_col, drop=False)
+        df_core['timestampHour'] = df_core[self.time_col].dt.hour
         self.cats_order.update({c: sorted(df_core[c].unique()) for c in ['timestampMonth', 'timestampDay',
                                                'timestampWeek', 'timestampDayofweek',
                                                'timestampDayofyear']})
@@ -141,7 +142,7 @@ class Processor:
                                                 ordered=True, inplace=True)
 
         # removing features
-        to_remove_cols = [self.dep_var, 'timestampYear', self.time_col]
+        to_remove_cols = [self.dep_var, 'timestampYear'] # , self.time_col
         df_core = df_core.drop(columns=[c for c in df_core.columns if c in to_remove_cols])
 
         # shrinking the data frame
@@ -151,7 +152,7 @@ class Processor:
         if not self.is_train:
             df_core.set_index('row_id', inplace=True)
         missing_cols = [col for col in df_core.columns.values if col not in self.cats + self.conts + [self.dep_var_new]
-                        and col != 'timestampElapsed']
+                        and col not in ['timestampElapsed', self.time_col]]
         assert len(missing_cols) == 0, f'Missed to assign columns: {missing_cols} to `conts` or `cats`'
         return df_core, var_names
 
