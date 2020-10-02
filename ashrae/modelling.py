@@ -31,7 +31,7 @@ cnr = lambda x: x.clone().numpy().ravel() # clone numpy ravel
 
 # Cell
 def split_dataset(X:pd.DataFrame, split_kind:str='random',
-                  train_frac:float=8):
+                  train_frac:float=8, t_train:pd.DataFrame=None):
 
     def random_split():
         n_train = int(len(X)*train_frac)
@@ -45,9 +45,19 @@ def split_dataset(X:pd.DataFrame, split_kind:str='random',
         threshold_t = ts.iloc[ix:].values[0]
         return X[time_col] < threshold_t
 
+    def fix_time_split():
+        assert t_train is not None
+        time_col = 'timestamp'
+        assert time_col in X.columns
+
+        mask = X[time_col].isin(t_train[time_col])
+        assert mask.sum() > 0
+        return mask
+
     split_funs = {
         'random': random_split,
         'time': time_split,
+        'fix_time': fix_time_split,
     }
 
     assert split_kind in split_funs

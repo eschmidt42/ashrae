@@ -63,7 +63,7 @@ class Processor:
 
         # adding basic statistics as features
         if add_dep_var_stats:
-            df_core = self.add_dep_var_stats(df_core, grp_cols=['meter'])
+            df_core = self.add_dep_var_stats(df_core) # , grp_cols=['meter']
 
         # adding building information
         if df_building is not None:
