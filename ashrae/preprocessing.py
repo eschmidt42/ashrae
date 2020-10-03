@@ -21,6 +21,9 @@ from fastai.tabular.all import *
 import tqdm
 
 from sklearn import linear_model, tree, model_selection, ensemble
+from sklearn.preprocessing import OneHotEncoder
+
+import itertools
 
 # Cell
 DEP_VAR = 'meter_reading'
@@ -36,8 +39,8 @@ class Processor:
     def __call__(self, df_core:pd.DataFrame, df_building:pd.DataFrame=None,
                  df_weather:pd.DataFrame=None, dep_var:str=None, time_col:str=None,
                  add_time_features:bool=False, add_dep_var_stats:bool=False,
-                 remove_leading_zeros:bool=False, remove_trailing_zeros:bool=True,
-                 remove_empty_weeks_before_first_full_week:bool=True,
+                 remove_leading_zeros:bool=False, remove_trailing_zeros:bool=False,
+                 remove_empty_weeks_before_first_full_week:bool=True, add_onehot:bool=False,
                  t_train:pd.DataFrame=None) -> pd.DataFrame:
 
         # TODO:
@@ -59,9 +62,10 @@ class Processor:
         self.is_train = self.dep_var in df_core.columns
 
         # core pieces of dependent and independent variables
-        self.dep_var_new = f'{self.dep_var}_log1p'
+        dep_var_new = f'{self.dep_var}_log1p'
         if self.is_train:
-            df_core[self.dep_var_new] = np.log(df_core[self.dep_var].values + 1)
+            df_core[dep_var_new] = np.log(df_core[self.dep_var].values + 1)
+        self.dep_var = dep_var_new
         self.cats += ['building_id', 'meter']
 
         # add timestamp related fields
@@ -82,7 +86,11 @@ class Processor:
 
         # adding basic statistics as features
         if add_dep_var_stats:
-            df_core = self.add_dep_var_stats(df_core) # , grp_cols=['meter']
+            df_core = self.add_dep_var_stats(df_core, grp_cols=['meter', 'building_id', 'timestampHour'])
+
+        # adding onehot encoded columns
+        if add_onehot:
+            df_core = self.add_onehot_encoded(df_core, onehot_cols=['meter'])
 
         # adding building information
         if df_building is not None:
@@ -95,6 +103,34 @@ class Processor:
 
         df_core, var_names = self.cleanup(df_core)
         return df_core, var_names
+
+    def add_onehot_encoded(self, df_core:pd.DataFrame, onehot_cols:typing.List[str]=['meter']):
+
+        t_col = 'timestampHour'
+        do_add_t = t_col in onehot_cols and t_col not in df_core.columns.values
+        if do_add_t:
+            df_core[t_col] = df_core['timestamp'].dt.hour
+
+        if self.is_train:
+            onehot = OneHotEncoder()
+            df_core['id'] = [str(v) for v in zip(*[df_core[v] for v in onehot_cols])]
+            onehot.fit(df_core.loc[:, ['id']])
+            self.onehot_tfm = onehot
+            self.onehot_cols = onehot_cols
+
+        names = [f'{"-".join(onehot_cols)}_{v}' for v in self.onehot_tfm.categories_[0]]
+
+        self.cats.extend(names)
+
+        df_onehot = pd.DataFrame(self.onehot_tfm.transform(df_core.loc[:, ['id']]).toarray(),
+                                 columns=names, index=df_core.index, dtype=bool)
+
+        to_drop = ['id']
+        if do_add_t:
+            to_drop.append(t_col)
+        df_core.drop(columns=to_drop, inplace=True)
+        return pd.concat((df_core, df_onehot), axis=1)
+
 
 
     def add_dep_var_stats(self, df_core:pd.DataFrame, grp_cols:typing.List[str]=None):
@@ -122,21 +158,25 @@ class Processor:
 
         # adding stats of self.dep_var on a more granular level
         if grp_cols is not None:
+            t_col = 'timestampHour'
+            do_add_t = t_col in grp_cols and t_col not in df_core.columns.values
+            if do_add_t:
+                df_core[t_col] = df_core['timestamp'].dt.hour
 
             assert all([c in df_core.columns.values for c in grp_cols])
-            for keys, grp in df_core.groupby(grp_cols):
-                if not isinstance(keys, (tuple,list)): keys = [keys]
-                for name, fun in funs.items():
-                    name = f'{self.dep_var}_{name}_{semi_ugly_join(grp_cols, keys)}'
-                    self.conts.append(name)
 
-                    if self.is_train:
-                        value = fun(grp[self.dep_var].values)
-                        df_core[name] = value
-                        self.dep_var_stats[name] = value
-                    else:
-                        df_core[name] = self.dep_var_stats[name]
+            for fun_name, fun in funs.items():
+                name = f'{self.dep_var}_{"-".join(grp_cols)}_{fun_name}'
+                self.conts.append(name)
 
+                if self.is_train:
+
+                    self.dep_var_stats[name] = (df_core.groupby(grp_cols)[self.dep_var]
+                                                .agg(fun)
+                                                .rename(name))
+                df_core = df_core.join(self.dep_var_stats[name], on=grp_cols)
+
+            df_core.drop(columns=[t_col], inplace=True)
         return df_core
 
     def add_time_features(self, df_core:pd.DataFrame):
@@ -296,17 +336,17 @@ class Processor:
                                                 ordered=True, inplace=True)
 
         # removing features
-        to_remove_cols = [self.dep_var, 'timestampYear'] # , self.time_col
+        to_remove_cols = ['meter_reading', 'timestampYear'] # , self.time_col
         df_core = df_core.drop(columns=[c for c in df_core.columns if c in to_remove_cols])
 
         # shrinking the data frame
         df_core = df_shrink(df_core, int2uint=True)
 
-        var_names = {'conts': self.conts, 'cats': self.cats, 'dep_var': self.dep_var_new}
+        var_names = {'conts': self.conts, 'cats': self.cats, 'dep_var': self.dep_var}
         if not self.is_train:
             df_core.set_index('row_id', inplace=True)
-        missing_cols = [col for col in df_core.columns.values if col not in self.cats + self.conts + [self.dep_var_new]
-                        and col not in ['timestampElapsed', self.time_col]]
+        missing_cols = [col for col in df_core.columns.values if col not in self.cats + self.conts + [self.dep_var]
+                        and col not in ['timestampElapsed', self.time_col, 'meter_reading']]
         assert len(missing_cols) == 0, f'Missed to assign columns: {missing_cols} to `conts` or `cats`'
         return df_core, var_names
 
@@ -340,26 +380,24 @@ def load_df(path:Path): return pd.read_parquet(path)
 
 # Cell
 def get_tabular_object(df:pd.DataFrame, var_names:dict,
-                       splits=None):
-    procs = [Categorify, FillMissing, Normalize]
+                       splits=None, procs:list=[Categorify, FillMissing, Normalize]):
     return TabularPandas(df.copy(), procs,
                          var_names['cats'], var_names['conts'],
                          y_names=var_names['dep_var'],
                          splits=splits)
-    return to
 
 
 def train_predict(df:pd.DataFrame, var_names:dict,
                   model, params:dict=None, n_rep:int=3,
                   n_samples_train:int=10000,
                   n_samples_test:int=10000,
-                  test_size:float=.2):
+                  test_size:float=.2, procs:list=[Categorify, FillMissing, Normalize]):
 
     y_col = var_names['dep_var']
     score_vals = []
     params = {} if params is None else params
 
-    to = get_tabular_object(df, var_names)
+    to = get_tabular_object(df, var_names, procs=procs)
 
     for i in tqdm.tqdm(range(n_rep), total=n_rep, desc='Repetition'):
 
@@ -403,11 +441,13 @@ def hist_plot_preds(y0:np.ndarray, y1:np.ndarray,
 
 # Cell
 class BoldlyWrongTimeseries:
-    def __init__(self, xs, y_true, y_pred, t:pd.DataFrame=None):
-        if t is None:
-            self.df = xs.loc[:,['meter', 'building_id', 'timestampElapsed']].copy()
+    def __init__(self, xs, y_true, y_pred, info:pd.DataFrame=None):
+        if info is None:
+            self.df = xs.loc[:,['meter', 'building_id', 'timestamp']].copy()
         else:
-            self.df = xs.loc[:,['meter', 'building_id']].join(t.reset_index().drop_duplicates().set_index('index'))
+            assert all([v in info.columns.values for v in ['meter', 'building_id', 'timestamp']])
+            self.df = xs.join(info)
+#             self.df = xs.loc[:,['meter', 'building_id']].join(t.reset_index().drop_duplicates().set_index('index'))
         self.df['y_true'] = y_true
         self.df['y_pred'] = y_pred
         self.compute_misses(y_true)
@@ -438,10 +478,11 @@ def plot_boldly_wrong(self:BoldlyWrongTimeseries,
 
     df_plot = self.df.loc[(self.df['meter']==meter) & (self.df['building_id']==bid)]
     df_plot = pd.concat((
-        df_plot[['timestampElapsed', 'y_true']].rename(columns={'y_true':'y'}).assign(label='true'),
-        df_plot[['timestampElapsed', 'y_pred']].rename(columns={'y_pred':'y'}).assign(label='pred'))
+        df_plot[['timestamp', 'y_true']].rename(columns={'y_true':'y'}).assign(label='true'),
+        df_plot[['timestamp', 'y_pred']].rename(columns={'y_pred':'y'}).assign(label='pred'))
     )
-    return df_plot.plot(kind='scatter', x='timestampElapsed',
+    display(df_plot.head())
+    return df_plot.plot(kind='scatter', x='timestamp',
                         y='y', color='label', opacity=.4,
                         title=f'pos {nth_last}: meter = {meter}, building_id = {bid}<br>loss = {loss:.3f}')
 
