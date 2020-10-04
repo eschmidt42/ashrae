@@ -287,6 +287,42 @@ nb_path: "nbs/02_preprocessing.ipynb"
 </div>
     {% endraw %}
 
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">t_train</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]][[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]]</span>
+<span class="n">t_train</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
+<span class="n">t_train</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;t_train.parquet&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Visualizing the split</p>
@@ -381,15 +417,15 @@ nb_path: "nbs/02_preprocessing.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">process_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">add_onehot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">add_time_features</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">add_onehot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">add_time_features</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">add_dep_var_stats</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">remove_leading_zeros</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">remove_trailing_zeros</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">remove_empty_weeks_before_first_full_week</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">t_train</span> <span class="o">=</span> <span class="n">t_train</span><span class="p">,</span>
-<span class="c1">#     df_building = building,</span>
-<span class="c1">#     df_weather = weather_train</span>
+    <span class="n">df_building</span> <span class="o">=</span> <span class="n">building</span><span class="p">,</span>
+    <span class="n">df_weather</span> <span class="o">=</span> <span class="n">weather_train</span>
 <span class="p">)</span>
 <span class="n">process</span> <span class="o">=</span> <span class="n">Processor</span><span class="p">()</span>
 </pre></div>
@@ -409,7 +445,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
-<span class="n">df</span><span class="p">,</span> <span class="n">var_names</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="c1">#.sample(100000), </span>
+<span class="n">df</span><span class="p">,</span> <span class="n">var_names</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> 
                         <span class="o">**</span><span class="n">process_config</span><span class="p">)</span>
 </pre></div>
 
@@ -494,40 +530,6 @@ nb_path: "nbs/02_preprocessing.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">var_names</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -543,7 +545,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="test_var_names" class="doc_header"><code>test_var_names</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L418" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>test_var_names</code>(<strong><code>var_names</code></strong>:<code>dict</code>)</p>
+<h4 id="test_var_names" class="doc_header"><code>test_var_names</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L420" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>test_var_names</code>(<strong><code>var_names</code></strong>:<code>dict</code>)</p>
 </blockquote>
 
 </div>
@@ -591,7 +593,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="store_var_names" class="doc_header"><code>store_var_names</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L426" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>store_var_names</code>(<strong><code>data_path</code></strong>:<code>Path</code>, <strong><code>var_names</code></strong>:<code>dict</code>)</p>
+<h4 id="store_var_names" class="doc_header"><code>store_var_names</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L428" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>store_var_names</code>(<strong><code>data_path</code></strong>:<code>Path</code>, <strong><code>var_names</code></strong>:<code>dict</code>)</p>
 </blockquote>
 
 </div>
@@ -640,7 +642,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="load_var_names" class="doc_header"><code>load_var_names</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L433" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_var_names</code>(<strong><code>fname</code></strong>:<code>Path</code>)</p>
+<h4 id="load_var_names" class="doc_header"><code>load_var_names</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L435" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_var_names</code>(<strong><code>fname</code></strong>:<code>Path</code>)</p>
 </blockquote>
 
 </div>
@@ -689,7 +691,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="store_df" class="doc_header"><code>store_df</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L440" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>store_df</code>(<strong><code>path</code></strong>:<code>Path</code>, <strong><code>df</code></strong>:<code>DataFrame</code>)</p>
+<h4 id="store_df" class="doc_header"><code>store_df</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L442" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>store_df</code>(<strong><code>path</code></strong>:<code>Path</code>, <strong><code>df</code></strong>:<code>DataFrame</code>)</p>
 </blockquote>
 
 </div>
@@ -756,7 +758,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="load_df" class="doc_header"><code>load_df</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L443" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_df</code>(<strong><code>path</code></strong>:<code>Path</code>)</p>
+<h4 id="load_df" class="doc_header"><code>load_df</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L445" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_df</code>(<strong><code>path</code></strong>:<code>Path</code>)</p>
 </blockquote>
 
 </div>
@@ -872,7 +874,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="get_tabular_object" class="doc_header"><code>get_tabular_object</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L446" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_tabular_object</code>(<strong><code>df</code></strong>:<code>DataFrame</code>, <strong><code>var_names</code></strong>:<code>dict</code>, <strong><code>splits</code></strong>=<em><code>None</code></em>, <strong><code>procs</code></strong>:<code>list</code>=<em><code>[&lt;class 'fastai.tabular.core.Categorify'&gt;, &lt;class 'fastai.tabular.core.FillMissing'&gt;, &lt;class 'fastai.data.transforms.Normalize'&gt;]</code></em>)</p>
+<h4 id="get_tabular_object" class="doc_header"><code>get_tabular_object</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L448" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>get_tabular_object</code>(<strong><code>df</code></strong>:<code>DataFrame</code>, <strong><code>var_names</code></strong>:<code>dict</code>, <strong><code>splits</code></strong>=<em><code>None</code></em>, <strong><code>procs</code></strong>:<code>list</code>=<em><code>[&lt;class 'fastai.tabular.core.Categorify'&gt;, &lt;class 'fastai.tabular.core.FillMissing'&gt;, &lt;class 'fastai.data.transforms.Normalize'&gt;]</code></em>)</p>
 </blockquote>
 
 </div>
@@ -896,7 +898,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="train_predict" class="doc_header"><code>train_predict</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L459" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>train_predict</code>(<strong><code>df</code></strong>:<code>DataFrame</code>, <strong><code>var_names</code></strong>:<code>dict</code>, <strong><code>model</code></strong>, <strong><code>params</code></strong>:<code>dict</code>=<em><code>None</code></em>, <strong><code>n_rep</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_samples_train</code></strong>:<code>int</code>=<em><code>10000</code></em>, <strong><code>n_samples_valid</code></strong>:<code>int</code>=<em><code>10000</code></em>, <strong><code>procs</code></strong>:<code>list</code>=<em><code>[&lt;class 'fastai.tabular.core.Categorify'&gt;, &lt;class 'fastai.tabular.core.FillMissing'&gt;, &lt;class 'fastai.data.transforms.Normalize'&gt;]</code></em>, <strong><code>split_params</code></strong>:<code>dict</code>=<em><code>None</code></em>)</p>
+<h4 id="train_predict" class="doc_header"><code>train_predict</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L461" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>train_predict</code>(<strong><code>df</code></strong>:<code>DataFrame</code>, <strong><code>var_names</code></strong>:<code>dict</code>, <strong><code>model</code></strong>, <strong><code>params</code></strong>:<code>dict</code>=<em><code>None</code></em>, <strong><code>n_rep</code></strong>:<code>int</code>=<em><code>3</code></em>, <strong><code>n_samples_train</code></strong>:<code>int</code>=<em><code>10000</code></em>, <strong><code>n_samples_valid</code></strong>:<code>int</code>=<em><code>10000</code></em>, <strong><code>procs</code></strong>:<code>list</code>=<em><code>[&lt;class 'fastai.tabular.core.Categorify'&gt;, &lt;class 'fastai.tabular.core.FillMissing'&gt;, &lt;class 'fastai.data.transforms.Normalize'&gt;]</code></em>, <strong><code>split_params</code></strong>:<code>dict</code>=<em><code>None</code></em>)</p>
 </blockquote>
 
 </div>
@@ -1299,7 +1301,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="hist_plot_preds" class="doc_header"><code>hist_plot_preds</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L493" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>hist_plot_preds</code>(<strong><code>y0</code></strong>:<code>ndarray</code>, <strong><code>y1</code></strong>:<code>ndarray</code>, <strong><code>label0</code></strong>:<code>str</code>=<em><code>'y0'</code></em>, <strong><code>label1</code></strong>:<code>str</code>=<em><code>'y1'</code></em>)</p>
+<h4 id="hist_plot_preds" class="doc_header"><code>hist_plot_preds</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L495" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>hist_plot_preds</code>(<strong><code>y0</code></strong>:<code>ndarray</code>, <strong><code>y1</code></strong>:<code>ndarray</code>, <strong><code>label0</code></strong>:<code>str</code>=<em><code>'y0'</code></em>, <strong><code>label1</code></strong>:<code>str</code>=<em><code>'y1'</code></em>)</p>
 </blockquote>
 
 </div>
@@ -1353,7 +1355,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="BoldlyWrongTimeseries" class="doc_header"><code>class</code> <code>BoldlyWrongTimeseries</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L513" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BoldlyWrongTimeseries</code>(<strong><code>xs</code></strong>, <strong><code>y_true</code></strong>, <strong><code>y_pred</code></strong>, <strong><code>info</code></strong>:<code>DataFrame</code>=<em><code>None</code></em>)</p>
+<h2 id="BoldlyWrongTimeseries" class="doc_header"><code>class</code> <code>BoldlyWrongTimeseries</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L515" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>BoldlyWrongTimeseries</code>(<strong><code>xs</code></strong>, <strong><code>y_true</code></strong>, <strong><code>y_pred</code></strong>, <strong><code>info</code></strong>:<code>DataFrame</code>=<em><code>None</code></em>)</p>
 </blockquote>
 
 </div>
@@ -1447,7 +1449,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="plot_boldly_wrong" class="doc_header"><code>plot_boldly_wrong</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L538" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>plot_boldly_wrong</code>(<strong><code>nth_last</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>meter</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>bid</code></strong>:<code>int</code>=<em><code>None</code></em>)</p>
+<h4 id="plot_boldly_wrong" class="doc_header"><code>plot_boldly_wrong</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L541" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>plot_boldly_wrong</code>(<strong><code>nth_last</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>meter</code></strong>:<code>int</code>=<em><code>None</code></em>, <strong><code>bid</code></strong>:<code>int</code>=<em><code>None</code></em>)</p>
 </blockquote>
 
 </div>
@@ -1519,7 +1521,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BoldlyWrongTimeseries.init_widgets" class="doc_header"><code>BoldlyWrongTimeseries.init_widgets</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L569" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BoldlyWrongTimeseries.init_widgets</code>()</p>
+<h4 id="BoldlyWrongTimeseries.init_widgets" class="doc_header"><code>BoldlyWrongTimeseries.init_widgets</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L572" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BoldlyWrongTimeseries.init_widgets</code>()</p>
 </blockquote>
 
 </div>
@@ -1543,7 +1545,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BoldlyWrongTimeseries.run_boldly" class="doc_header"><code>BoldlyWrongTimeseries.run_boldly</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L582" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BoldlyWrongTimeseries.run_boldly</code>()</p>
+<h4 id="BoldlyWrongTimeseries.run_boldly" class="doc_header"><code>BoldlyWrongTimeseries.run_boldly</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L585" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BoldlyWrongTimeseries.run_boldly</code>()</p>
 </blockquote>
 
 </div>
@@ -1567,7 +1569,7 @@ nb_path: "nbs/02_preprocessing.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="BoldlyWrongTimeseries.click_boldly_wrong" class="doc_header"><code>BoldlyWrongTimeseries.click_boldly_wrong</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L590" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BoldlyWrongTimeseries.click_boldly_wrong</code>(<strong><code>change</code></strong>)</p>
+<h4 id="BoldlyWrongTimeseries.click_boldly_wrong" class="doc_header"><code>BoldlyWrongTimeseries.click_boldly_wrong</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/preprocessing.py#L593" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>BoldlyWrongTimeseries.click_boldly_wrong</code>(<strong><code>change</code></strong>)</p>
 </blockquote>
 
 </div>
