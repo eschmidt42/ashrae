@@ -174,7 +174,8 @@ nb_path: "nbs/03_modelling.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">load_df</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;X.parquet&#39;</span><span class="p">)</span>
+<span class="c1">#df = preprocessing.load_df(data_path/&#39;X.parquet&#39;)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">load_df</span><span class="p">(</span><span class="s1">&#39;s3://dkb-ds-playground/hackdays/ashrae-energy-prediction/features/X.parquet&#39;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">do_test</span><span class="p">:</span>
     <span class="n">df_test</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">load_df</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;X_test.parquet&#39;</span><span class="p">)</span>
@@ -203,14 +204,14 @@ nb_path: "nbs/03_modelling.ipynb"
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
 <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># per building_id and meter sampling</span>
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># per building_id and meter sampling</span>
     <span class="n">n_sample_per_bid</span> <span class="o">=</span> <span class="mi">50</span>
     <span class="n">replace</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">df</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;building_id&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">])</span>
          <span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n_sample_per_bid</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">))</span>
 
-<span class="k">if</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># general sampling</span>
+<span class="k">if</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># general sampling</span>
     <span class="n">frac_samples</span> <span class="o">=</span> <span class="o">.</span><span class="mi">05</span>
     <span class="n">replace</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -235,6 +236,76 @@ nb_path: "nbs/03_modelling.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
+<span class="n">t_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;split_timestamps_train.parquet&#39;</span><span class="p">)</span>
+<span class="n">t_val</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;split_timestamps_val.parquet&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -250,7 +321,7 @@ nb_path: "nbs/03_modelling.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="split_dataset" class="doc_header"><code>split_dataset</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/modelling.py#L33" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>split_dataset</code>(<strong><code>X</code></strong>:<code>DataFrame</code>, <strong><code>split_kind</code></strong>:<code>str</code>=<em><code>'random'</code></em>, <strong><code>train_frac</code></strong>:<code>float</code>=<em><code>8</code></em>)</p>
+<h4 id="split_dataset" class="doc_header"><code>split_dataset</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/modelling.py#L33" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>split_dataset</code>(<strong><code>X</code></strong>:<code>DataFrame</code>, <strong><code>split_kind</code></strong>:<code>str</code>=<em><code>'random'</code></em>, <strong><code>train_frac</code></strong>:<code>float</code>=<em><code>8</code></em>, <strong><code>t_train</code></strong>:<code>DataFrame</code>=<em><code>None</code></em>)</p>
 </blockquote>
 
 </div>
@@ -271,9 +342,11 @@ nb_path: "nbs/03_modelling.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
-<span class="n">split_kind</span> <span class="o">=</span> <span class="s1">&#39;random&#39;</span>
+<span class="c1">#split_kind = &#39;random&#39;</span>
 <span class="c1">#split_kind = &#39;time&#39;</span>
-<span class="n">splits</span> <span class="o">=</span> <span class="n">split_dataset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">split_kind</span><span class="o">=</span><span class="n">split_kind</span><span class="p">,</span> <span class="n">train_frac</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">split_kind</span> <span class="o">=</span> <span class="s1">&#39;fix_time&#39;</span>
+<span class="n">splits</span> <span class="o">=</span> <span class="n">split_dataset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">split_kind</span><span class="o">=</span><span class="n">split_kind</span><span class="p">,</span> <span class="n">train_frac</span><span class="o">=.</span><span class="mi">8</span><span class="p">,</span>
+                       <span class="n">t_train</span><span class="o">=</span><span class="n">t_train</span><span class="p">)</span>
 <span class="c1">#splits=None</span>
 </pre></div>
 
@@ -537,7 +610,7 @@ nb_path: "nbs/03_modelling.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Sine" class="doc_header"><code>class</code> <code>Sine</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/modelling.py#L72" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Sine</code>(<strong><code>inplace</code></strong>:<code>bool</code>=<em><code>False</code></em>) :: <code>ReLU</code></p>
+<h2 id="Sine" class="doc_header"><code>class</code> <code>Sine</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/modelling.py#L91" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Sine</code>(<strong><code>inplace</code></strong>:<code>bool</code>=<em><code>False</code></em>) :: <code>ReLU</code></p>
 </blockquote>
 <p>Applies the rectified linear unit function element-wise:</p>
 <p>:math:<code>\text{ReLU}(x) = (x)^+ = \max(0, x)</code></p>
@@ -625,7 +698,7 @@ nb_path: "nbs/03_modelling.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
 </pre></div>
 
     </div>
