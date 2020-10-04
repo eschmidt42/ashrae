@@ -45,6 +45,15 @@ def split_dataset(X:pd.DataFrame, split_kind:str='random',
         threshold_t = ts.iloc[ix:].values[0]
         return X[time_col] < threshold_t
 
+    def time_split_lina():
+        time_col = 'timestampDayofyear'
+        assert time_col in X.columns
+        days = X[time_col].unique()
+        day_values = random.choice(days, size=int(len(days) * trainfrac))
+        mask = X[time_col].isin(day_values)
+        assert mask.sum() > 0
+        return mask
+
     def fix_time_split():
         assert t_train is not None
         time_col = 'timestamp'
