@@ -171,14 +171,15 @@ class Processor:
         if do_add_t:
             df_core[t_col] = df_core['timestamp'].dt.hour
 
-        if self.is_train:
-            onehot = OneHotEncoder()
-            df_core['id'] = [str(v) for v in zip(*[df_core[v] for v in onehot_cols])]
-            onehot.fit(df_core.loc[:, ['id']])
-            self.onehot_tfm = onehot
-            self.onehot_cols = onehot_cols
+        df_core['id'] = [str(v) for v in zip(*[df_core[v] for v in onehot_cols])]
 
-        names = [f'{"-".join(onehot_cols)}_{v}' for v in self.onehot_tfm.categories_[0]]
+        if self.is_train:
+            self.onehot_cols = onehot_cols
+            self.onehot_tfm = OneHotEncoder()
+            self.onehot_tfm.fit(df_core.loc[:, ['id']])
+
+
+        names = [f'{"-".join(self.onehot_cols)}_{v}' for v in self.onehot_tfm.categories_[0]]
 
         self.cats.extend(names)
 
@@ -235,7 +236,8 @@ class Processor:
                                                 .rename(name))
                 df_core = df_core.join(self.dep_var_stats[name], on=grp_cols)
 
-            df_core.drop(columns=[t_col], inplace=True)
+            if do_add_t:
+                df_core.drop(columns=[t_col], inplace=True)
         return df_core
 
     def add_time_features(self, df_core:pd.DataFrame):
@@ -519,6 +521,7 @@ class BoldlyWrongTimeseries:
             self.df = xs.join(info)
 
         for col in ['meter', 'building_id']:
+            self.df[col] = self.df[col].astype('category')
             self.df[col].cat.set_categories(sorted(self.df[col].unique()),
                                             ordered=True, inplace=True)
 
