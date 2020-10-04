@@ -91,8 +91,8 @@ nb_path: "nbs/03_modelling.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">do_test</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">do_submit</span> <span class="o">=</span> <span class="kc">False</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">do_test</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">do_submit</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;../data&quot;</span><span class="p">)</span>
 </pre></div>
 
@@ -174,10 +174,10 @@ nb_path: "nbs/03_modelling.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">load_df</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;X.parquet&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">load_df</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;X.parquet&#39;</span><span class="p">)</span> <span class="c1">#.sample(100000)</span>
 
 <span class="k">if</span> <span class="n">do_test</span><span class="p">:</span>
-    <span class="n">df_test</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">load_df</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;X_test.parquet&#39;</span><span class="p">)</span>
+    <span class="n">df_test</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">load_df</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;X_test.parquet&#39;</span><span class="p">)</span> <span class="c1">#.sample(100000)</span>
 </pre></div>
 
     </div>
@@ -203,7 +203,7 @@ nb_path: "nbs/03_modelling.ipynb"
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
 <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="kc">True</span><span class="p">:</span> <span class="c1"># per building_id and meter sampling</span>
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span> <span class="c1"># per building_id and meter sampling</span>
     <span class="n">n_sample_per_bid</span> <span class="o">=</span> <span class="mi">50</span>
     <span class="n">replace</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -235,46 +235,12 @@ nb_path: "nbs/03_modelling.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_markdown rendered_html output_subarea ">
-<h4 id="split_dataset" class="doc_header"><code>split_dataset</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/modelling.py#L33" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>split_dataset</code>(<strong><code>X</code></strong>:<code>DataFrame</code>, <strong><code>split_kind</code></strong>:<code>str</code>=<em><code>'random'</code></em>, <strong><code>train_frac</code></strong>:<code>float</code>=<em><code>8</code></em>)</p>
-</blockquote>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
-<span class="n">split_kind</span> <span class="o">=</span> <span class="s1">&#39;random&#39;</span>
-<span class="c1">#split_kind = &#39;time&#39;</span>
-<span class="n">splits</span> <span class="o">=</span> <span class="n">split_dataset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">split_kind</span><span class="o">=</span><span class="n">split_kind</span><span class="p">,</span> <span class="n">train_frac</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
-<span class="c1">#splits=None</span>
+<span class="n">t_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">data_path</span><span class="o">/</span><span class="s1">&#39;t_train.parquet&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -292,7 +258,79 @@ nb_path: "nbs/03_modelling.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
-<span class="n">to</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">get_tabular_object</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">var_names</span><span class="p">,</span> <span class="n">splits</span><span class="o">=</span><span class="n">splits</span><span class="p">)</span>
+<span class="c1">#split_kind = &#39;random&#39;</span>
+<span class="c1">#split_kind = &#39;time&#39;</span>
+<span class="c1"># split_kind = &#39;fix_time&#39;</span>
+<span class="n">split_kind</span> <span class="o">=</span> <span class="s1">&#39;time_split_day&#39;</span>
+
+<span class="n">t_train</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">train_frac</span> <span class="o">=</span> <span class="o">.</span><span class="mi">8</span>
+<span class="n">splits</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">split_dataset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">split_kind</span><span class="o">=</span><span class="n">split_kind</span><span class="p">,</span> <span class="n">train_frac</span><span class="o">=</span><span class="n">train_frac</span><span class="p">,</span>
+                                     <span class="n">t_train</span><span class="o">=</span><span class="n">t_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sets </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span><span class="si">}</span><span class="s1">, train </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">, valid </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">var_names</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">var_names_no_anns</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;dep_var&#39;</span><span class="p">:</span> <span class="n">var_names</span><span class="p">[</span><span class="s1">&#39;dep_var&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;conts&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">var_names</span><span class="p">[</span><span class="s1">&#39;conts&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;meter_reading&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">],</span>
+    <span class="s1">&#39;cats&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">var_names</span><span class="p">[</span><span class="s1">&#39;cats&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;meter_&#39;</span><span class="p">)]</span>
+<span class="p">}</span>
+<span class="n">var_names_no_anns</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
+<span class="n">procs</span> <span class="o">=</span> <span class="p">[]</span> 
+<span class="c1"># procs = [Categorify, FillMissing, Normalize]</span>
+<span class="n">to</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">get_tabular_object</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> 
+                                      <span class="n">var_names_no_anns</span><span class="p">,</span>
+<span class="c1">#                                       var_names, </span>
+                                      <span class="n">splits</span><span class="o">=</span><span class="n">splits</span><span class="p">,</span>
+                                      <span class="n">procs</span><span class="o">=</span><span class="n">procs</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -371,10 +409,10 @@ nb_path: "nbs/03_modelling.ipynb"
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
-<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;max_features&#39;</span><span class="p">:</span> <span class="s1">&#39;sqrt&#39;</span><span class="p">}</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">RandomForestRegressor</span>
-<span class="c1"># params = {}</span>
-<span class="c1"># model = linear_model.LinearRegression</span>
+<span class="c1"># params = {&#39;n_estimators&#39;: 20, &#39;max_features&#39;: &#39;sqrt&#39;}</span>
+<span class="c1"># model = ensemble.RandomForestRegressor</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span>
 
 <span class="n">m</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
 </pre></div>
@@ -537,7 +575,7 @@ nb_path: "nbs/03_modelling.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="Sine" class="doc_header"><code>class</code> <code>Sine</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/modelling.py#L72" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Sine</code>(<strong><code>inplace</code></strong>:<code>bool</code>=<em><code>False</code></em>) :: <code>ReLU</code></p>
+<h2 id="Sine" class="doc_header"><code>class</code> <code>Sine</code><a href="https://github.com/eschmidt42/ashrae/tree/master/ashrae/modelling.py#L43" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>Sine</code>(<strong><code>inplace</code></strong>:<code>bool</code>=<em><code>False</code></em>) :: <code>ReLU</code></p>
 </blockquote>
 <p>Applies the rectified linear unit function element-wise:</p>
 <p>:math:<code>\text{ReLU}(x) = (x)^+ = \max(0, x)</code></p>
@@ -625,7 +663,7 @@ nb_path: "nbs/03_modelling.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">lr_max</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -938,9 +976,27 @@ nb_path: "nbs/03_modelling.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">to</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%time</span>
-<span class="n">bwt</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">BoldlyWrongTimeseries</span><span class="p">(</span><span class="n">to</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">y_valid_true</span><span class="p">,</span> <span class="n">y_valid_pred</span><span class="p">,</span>
-                                          <span class="n">t</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">splits</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s1">&#39;timestampElapsed&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+<span class="n">miss_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;building_id&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">,</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+<span class="n">tmp</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">miss_cols</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">miss_cols</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="k">else</span> <span class="n">to</span><span class="o">.</span><span class="n">valid</span><span class="o">.</span><span class="n">xs</span>
+<span class="n">bwt</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">BoldlyWrongTimeseries</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">y_valid_true</span><span class="p">,</span> <span class="n">y_valid_pred</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -1042,9 +1098,16 @@ nb_path: "nbs/03_modelling.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">message</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;lightgbm&#39;</span><span class="p">,</span> <span class="s1">&#39;500 obs/bid&#39;</span><span class="p">,</span> <span class="s1">&#39;100 rounds&#39;</span><span class="p">,</span> <span class="s1">&#39;42 leaves&#39;</span><span class="p">,</span> <span class="s1">&#39;lr .5&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;nb score </span><span class="si">{</span><span class="n">nb_score</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;baseline (linear regression)&#39;</span>
+<span class="n">split_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;split kind &quot;</span><span class="si">{</span><span class="n">split_kind</span><span class="si">}</span><span class="s1">&quot; train_frac </span><span class="si">{</span><span class="n">train_frac</span><span class="si">}</span><span class="s1">&#39;</span>
+<span class="n">samples_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;num samples </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> %&#39;</span>
+<span class="n">features_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;dep_var_stats and 1hot meter&#39;</span>
+<span class="n">score_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;nb score </span><span class="si">{</span><span class="n">nb_score</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span>
+<span class="c1"># message = [&#39;baseline (linear regression on dep_var_stats and 1hot meter) &#39;, &#39;500 obs/bid&#39;, f&#39;nb score {nb_score:.4f}&#39;]</span>
+<span class="c1"># message = [&#39;random forest&#39;, &#39;500 obs/bid&#39;, &#39;all features&#39;, f&#39;nb score {nb_score:.4f}&#39;]</span>
+<span class="c1"># message = [&#39;lightgbm&#39;, &#39;500 obs/bid&#39;, &#39;100 rounds&#39;, &#39;42 leaves&#39;, &#39;lr .5&#39;, f&#39;nb score {nb_score:.4f}&#39;]</span>
 <span class="c1"># message = [&#39;tabular_learner&#39;, &#39;500 obs/bid&#39;, &#39;all features&#39;, f&#39;layers {layers}, embed_p .1, ps [.1,.1,.1]&#39;, f&#39;nb score {nb_score:.4f}&#39;]</span>
-<span class="n">message</span> <span class="o">=</span> <span class="s1">&#39; + &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="n">message</span> <span class="o">=</span> <span class="s1">&#39; + &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">model_msg</span><span class="p">,</span> <span class="n">samples_msg</span><span class="p">,</span> <span class="n">split_msg</span><span class="p">,</span> <span class="n">features_msg</span><span class="p">,</span> <span class="n">score_msg</span><span class="p">])</span>
 <span class="n">message</span>
 </pre></div>
 
