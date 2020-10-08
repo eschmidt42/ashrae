@@ -26,6 +26,8 @@ from sklearn.preprocessing import OneHotEncoder
 
 import itertools
 
+from pandas.tseries.holiday import USFederalHolidayCalendar as us_calendar
+
 # Cell
 def split_dataset(X:pd.DataFrame, split_kind:str='random',
                   train_frac:float=8, t_train:pd.DataFrame=None):
@@ -100,6 +102,7 @@ class Processor:
                  df_weather:pd.DataFrame=None, dep_var:str=None, time_col:str=None,
                  add_time_features:bool=False, add_dep_var_stats:bool=False,
                  remove_leading_zeros:bool=False, remove_trailing_zeros:bool=False,
+                 fix_bid_363:bool=True, add_us_holidays:bool=False,
                  remove_empty_weeks_before_first_full_week:bool=True, add_onehot:bool=False,
                  t_train:pd.DataFrame=None) -> pd.DataFrame:
 
@@ -132,6 +135,9 @@ class Processor:
         if add_time_features:
             df_core = self.add_time_features(df_core)
 
+        if add_us_holidays:
+            df_core = self.add_us_holiday(df_core)
+
         # removing leading zeros
         if remove_leading_zeros and self.is_train:
             df_core = self.remove_leading_zeros(df_core, t_train=t_train)
@@ -143,6 +149,10 @@ class Processor:
         # removing weeks before the first full week
         if remove_empty_weeks_before_first_full_week and self.is_train:
             df_core = self.remove_empty_weeks_before_first_full_week(df_core, t_train=t_train)
+
+        # removing readings originating probably from construction time of the building
+        if fix_bid_363:
+            df_core = self.fix_bid_363(df_core)
 
         # adding basic statistics as features
         if add_dep_var_stats:
@@ -257,6 +267,18 @@ class Processor:
         })
         return df_core
 
+
+    def add_us_holiday(self, df_core:pd.DataFrame):
+
+        dates_range = pd.date_range(start='2015-12-31', end='2019-01-01')
+        us_holidays = us_calendar().holidays(start=dates_range.min(), end=dates_range.max())
+
+        df_core['is_holiday'] = (df_core['timestamp'].dt.date.astype('datetime64')
+                                 .isin(us_holidays)
+                                 .astype(bool))
+        self.cats.append('is_holiday')
+        return df_core
+
     def add_building_features(self, df_core:pd.DataFrame, df_building:pd.DataFrame):
         n = len(df_core)
         df_core = pd.merge(df_core, df_building, on='building_id', how='left')
@@ -330,6 +352,14 @@ class Processor:
 
         return df_core
 
+    def fix_bid_363(self, df_core:pd.DataFrame):
+
+        assert 'timestamp' in df_core.columns
+        mask = (df_core['building_id'] == 363)
+        mask = mask & (df_core['meter'] == 0)
+        mask = mask & (df_core['timestamp'] < pd.to_datetime('2016-07-30'))
+        return df_core.loc[~mask,:]
+
     def remove_empty_weeks_before_first_full_week(self, df_core:pd.DataFrame,
                                                   t_train:pd.DataFrame):
         'there are some timeseries with weeks in the beginning which are basically empty'
@@ -346,7 +376,9 @@ class Processor:
 
         combs = get_combs(df_core)
 
-        df_core['timestampWeek'] = df_core[self.time_col].dt.isocalendar().week
+        add_t = 'timestampWeek' not in df_core.columns
+        if add_t:
+            df_core['timestampWeek'] = df_core[self.time_col].dt.isocalendar().week
 
         counts = (df_core[df_core[self.dep_var] > 0]
                   .groupby(["building_id","meter","timestampWeek"])
@@ -354,7 +386,7 @@ class Processor:
                   .rename("num_weekly_measurements").reset_index())
 
         expected_num = 24*7 # hours per week with a measurement
-        expected_num *= 0.5
+        expected_num *= 0.9
 
         first_full_week = (counts[counts['num_weekly_measurements'] > expected_num]
                            .groupby(["building_id","meter"])
@@ -379,7 +411,10 @@ class Processor:
 
         df_core = df_core.loc[mask,:]
 
-        df_core.drop(columns=['timestampWeek', 'first_full_week'], inplace=True)
+        to_drop = ['first_full_week']
+        if add_t:
+            to_drop.append('timestampWeek')
+        df_core.drop(columns=to_drop, inplace=True)
 
         na_combs = get_combs(df_core)
         miss_combs = [v for v in na_combs if v not in combs]
@@ -566,7 +601,6 @@ def plot_boldly_wrong(self:BoldlyWrongTimeseries,
                         title=f'pos {nth_last}: meter = {meter}, building_id = {bid}<br>loss = {loss:.3f}')
 
 
-BoldlyWrongTimeseries.plot_boldly_wrong = plot_boldly_wrong
 
 # Cell
 @patch
