@@ -59,8 +59,8 @@ def get_weather_X(path:Path):
 # Cell
 class InspectTimeseries:
     def __init__(self, train:pd.DataFrame, building:pd.DataFrame=None,
-                 weather:pd.DataFrame=None):
-
+                 weather:pd.DataFrame=None, dep_var:str='meter_reading'):
+        self.dep_var = dep_var
         self.df = train
         self.building = building
         self.weather = weather
@@ -72,16 +72,18 @@ class InspectTimeseries:
 # Cell
 @patch
 def init_widgets(self:InspectTimeseries):
-
-    self.int_txt_meter = widgets.IntText(min=self.df['meter'].min(),
-                                         max=self.df['meter'].max(),
+    self.int_txt_meter = widgets.IntText(min=np.array(self.df['meter']).min(),
+                                         max=np.array(self.df['meter']).max(),
                                          description='Meter')
-    self.int_txt_bid = widgets.IntText(min=self.df['building_id'].min(),
-                                       max=self.df['building_id'].max(),
+    self.int_txt_bid = widgets.IntText(min=np.array(self.df['building_id']).min(),
+                                       max=np.array(self.df['building_id']).max(),
                                        description='building id')
 
     self.run_btn = widgets.Button(description='plot')
     self.run_btn.on_click(self.click_boldly)
+    self.selection_mode = widgets.Dropdown(description='selection',
+                                           value='all',
+                                           options=['all', 'random', 'filled_weeks', 'outlying'])
     self.out_wdg = widgets.Output()
 
 
@@ -91,6 +93,7 @@ def inspect_boldly(self:InspectTimeseries):
         self.init_widgets()
     return widgets.VBox([self.int_txt_meter,
                          self.int_txt_bid,
+                         self.selection_mode,
                          self.run_btn, self.out_wdg])
 
 @patch
@@ -108,17 +111,69 @@ def click_boldly(self:InspectTimeseries, change):
 
 # Cell
 @patch
+def select_boldly_all(self:InspectTimeseries, df_plot:pd.DataFrame):
+    return df_plot.assign(label='all')
+
+@patch
+def select_boldly_random(self:InspectTimeseries, df_plot:pd.DataFrame):
+    mask_random = np.random.choice([True,False], size=len(df_plot))
+    return pd.concat((
+        (df_plot.loc[~mask_random, ['timestamp', self.dep_var]]
+         .assign(label='one')),
+        (df_plot.loc[mask_random, ['timestamp', self.dep_var]]
+         .assign(label='two')),
+    ),ignore_index=True)
+
+
+@patch
+def select_boldly_filled_weeks(self:InspectTimeseries, df_plot:pd.DataFrame):
+    wks = (df_plot.groupby(pd.Grouper(key='timestamp', freq='W-MON'))[self.dep_var]
+           .describe(percentiles=[.05, .95]))
+
+    w_range = pd.date_range(df_plot['timestamp'].dt.date.min()-pd.Timedelta(7,unit='w'), df_plot['timestamp'].dt.date.max()+pd.Timedelta(7,unit='d'), freq='W-MON')
+
+    df_plot['week'] = [v.right for v in pd.cut(df_plot['timestamp'], w_range)]
+
+    df_plot = df_plot.join(wks.loc[:,['5%', '95%']], on='week')
+    mask_drop = np.isclose(df_plot['5%'], df_plot['95%'])
+    return pd.concat((
+        (df_plot.loc[mask_drop, ['timestamp', self.dep_var]]
+         .assign(label='constant')),
+        (df_plot.loc[~mask_drop, ['timestamp', self.dep_var]]
+         .assign(label='not constant')),
+    ),ignore_index=True)
+
+@patch
+def select_boldly_outlying(self:InspectTimeseries, df_plot:pd.DataFrame):
+
+    s = df_plot[self.dep_var].describe()
+    threshold = s['50%'] + (s['75%'] - s['50%']) * 10
+
+    mask = df_plot[self.dep_var] > threshold
+    return pd.concat((
+        (df_plot.loc[~mask, ['timestamp', self.dep_var]]
+         .assign(label='normal')),
+        (df_plot.loc[mask, ['timestamp', self.dep_var]]
+         .assign(label=f'outlier {mask.sum()}')),
+    ),ignore_index=True)
+
+@patch
 def plot_boldly(self:InspectTimeseries,
                 meter:int=None, bid:int=None):
 
-    dep_var = 'meter_reading'
     assert (meter is not None and bid is not None)
 
     mask = (self.df['meter']==int(meter)) & (self.df['building_id']==int(bid))
-    df_plot = self.df.loc[mask, ['timestamp', dep_var]]
+
+
+    df_plot = self.df.loc[mask, ['timestamp', self.dep_var]]
+
+    df_plot = getattr(self, f'select_boldly_{self.selection_mode.value}')(df_plot)
+
+
     fig = px.scatter(df_plot, x='timestamp',
-                   y=dep_var,
-                   title=f'meter = {meter}, building_id = {bid}')
+                     y=self.dep_var, color='label',
+                     title=f'meter = {meter}, building_id = {bid}')
 #     fig.update_traces(line=dict(color="Black", width=.4))
-    fig.update_traces(marker=dict(size=1.5,color='Black'))
+    fig.update_traces(marker=dict(size=1.5)) # ,color='Black'
     return fig
