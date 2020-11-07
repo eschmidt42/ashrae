@@ -31,13 +31,15 @@ class InspectTimeseries:
 
 # Cell
 @patch
-def init_widgets(self:InspectTimeseries):
+def init_widgets(self:InspectTimeseries, meter:int=0, bid:int=0):
     self.int_txt_meter = widgets.IntText(min=np.array(self.df['meter']).min(),
                                          max=np.array(self.df['meter']).max(),
-                                         description='Meter')
+                                         description='Meter',
+                                         value=meter)
     self.int_txt_bid = widgets.IntText(min=np.array(self.df['building_id']).min(),
                                        max=np.array(self.df['building_id']).max(),
-                                       description='building id')
+                                       description='building id',
+                                       value=bid)
 
     self.run_btn = widgets.Button(description='plot')
     self.run_btn.on_click(self.click_boldly)
@@ -48,9 +50,10 @@ def init_widgets(self:InspectTimeseries):
 
 
 @patch
-def inspect_boldly(self:InspectTimeseries):
+@delegates(init_widgets)
+def inspect_boldly(self:InspectTimeseries, **kwargs):
     if not hasattr(self, 'switch_btn'):
-        self.init_widgets()
+        self.init_widgets(**kwargs)
     return widgets.VBox([self.int_txt_meter,
                          self.int_txt_bid,
                          self.selection_mode,

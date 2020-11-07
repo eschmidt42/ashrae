@@ -2,8 +2,8 @@
 
 __all__ = ['split_dataset', 'Processor', 'DEP_VAR', 'TIME_COL', 'site_GMT_offsets', 'GMT_offset_map',
            'DEFAULT_GRP_COLS', 'DEFAULT_ONEHOT_COLS', 'align_test', 'test_var_names', 'store_var_names',
-           'load_var_names', 'store_df', 'load_df', 'get_tabular_object', 'train_predict', 'SPLIT_PARAMS',
-           'hist_plot_preds', 'BoldlyWrongTimeseries']
+           'load_var_names', 'store_df', 'preprocess_all', 'load_df', 'get_tabular_object', 'train_predict',
+           'SPLIT_PARAMS', 'hist_plot_preds', 'BoldlyWrongTimeseries']
 
 # Cell
 import pandas as pd
@@ -587,6 +587,35 @@ def load_var_names(fname:Path):
 
 # Cell
 def store_df(path:Path, df:pd.DataFrame): df.to_parquet(path)
+
+# Cell
+@typed
+def preprocess_all(ashrae_data:dict, tfms_config:dict):
+
+    processor = Processor() # t_train=t_train
+
+    df, var_names = processor(ashrae_data['meter_train'], tfms_configs=tfms_config,
+                              df_weather=ashrae_data['weather_train'],
+                              df_building=ashrae_data['building'])
+
+    df_test_p, _ = processor(ashrae_data['meter_test'], tfms_configs=tfms_config,
+                             df_weather=ashrae_data['weather_test'],
+                             df_building=ashrae_data['building'])
+
+    test_nans = loading.show_nans(df_test_p)
+    train_nans = loading.show_nans(df)
+
+    test_nan_cols = [col for col in test_nans.loc[test_nans['# NaNs']>0].index]
+    assert (train_nans.loc[train_nans.index.isin(test_nan_cols),'# NaNs'] == 0).sum() == 0
+
+    df_test = align_test(df, var_names, df_test_p)
+    assert len(df_test) == len(ashrae_data['meter_test'])
+
+    assert len(df_test.columns) + 1 == len(df.columns)
+
+    test_var_names(var_names)
+
+    return df, df_test, var_names
 
 # Cell
 def load_df(path:Path): return pd.read_parquet(path)
