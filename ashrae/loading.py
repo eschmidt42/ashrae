@@ -39,9 +39,9 @@ def get_csvs(data_path:Path=None, csv_names_map:typing.Dict[str,str]=None) -> di
 
 # Cell
 @typed
-def get_meter_data(path:Path, nrows:int=None) -> pd.DataFrame:
+def get_meter_data(path:Path, nrows:int=-1) -> pd.DataFrame:
     df = pd.read_csv(path, parse_dates=['timestamp'])
-    if nrows is not None: df = df.sample(nrows)
+    if nrows > 0: df = df.sample(nrows)
     logger.info(f'Loading meter data: {path}')
     return df_shrink(df, int2uint=True)
 
@@ -69,9 +69,9 @@ def show_nans(df:pd.DataFrame) -> pd.DataFrame:
 # Cell
 @typed
 def test_meter_train_and_test_set(df_train:pd.DataFrame, df_test:pd.DataFrame):
-    assert len(df_train) == (20216100 if N_TRAIN is None else N_TRAIN)
-    assert len(df_test) == (41697600 if N_TEST is None else N_TEST)
-    if N_TRAIN is None and N_TEST is None:
+    assert len(df_train) == (20216100 if N_TRAIN == -1 else N_TRAIN)
+    assert len(df_test) == (41697600 if N_TEST == -1 else N_TEST)
+    if N_TRAIN > 0 and N_TEST > 0:
         assert set(df_train['meter'].unique()) == set(df_test['meter'].unique())
         assert set(df_train['building_id'].unique()) == set(df_test['building_id'].unique())
     train_nans = show_nans(df_train)
@@ -94,7 +94,7 @@ def get_building_data(path:Path=None) -> pd.DataFrame:
 @typed
 def test_building(df_building:pd.DataFrame, df_core:pd.DataFrame):
     assert df_building['building_id'].nunique() == len(df_building)
-    if N_TRAIN is None: assert set(df_core['building_id'].unique()) == set(df_building['building_id'].unique())
+    if N_TRAIN == -1: assert set(df_core['building_id'].unique()) == set(df_building['building_id'].unique())
     building_nans = show_nans(df_building)
     display(building_nans)
     assert np.allclose(building_nans['# NaNs'].values, [1094, 774, 0, 0, 0, 0])
