@@ -30,8 +30,8 @@ SPLIT_PARAMS = dict(
 
 def train_predict(df:pd.DataFrame, var_names:dict,
                   model, model_params:dict=None, n_rep:int=3,
-                  n_samples_train:int=10000,
-                  n_samples_valid:int=10000,
+                  n_samples_train:int=10_000,
+                  n_samples_valid:int=10_000,
                   procs:list=[Categorify, FillMissing, Normalize],
                   split_params:dict=None):
 

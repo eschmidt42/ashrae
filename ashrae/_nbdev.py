@@ -4,9 +4,11 @@ __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"evaluate_torch": "one_meter_one_model.ipynb",
          "cnr": "one_meter_one_model.ipynb",
+         "get_embedding_features_df": "all_meters_one_model.ipynb",
+         "replace_cat_features_with_embeddings": "all_meters_one_model.ipynb",
+         "pick_random": "one_meter_one_model.ipynb",
          "Swish": "one_meter_one_model.ipynb",
          "Sine": "one_meter_one_model.ipynb",
-         "pick_random": "one_meter_one_model.ipynb",
          "get_tabular_object": "feature_testing.ipynb",
          "train_predict": "feature_testing.ipynb",
          "SPLIT_PARAMS": "feature_testing.ipynb",
