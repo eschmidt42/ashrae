@@ -15,6 +15,8 @@ import typing
 import pickle
 import ipywidgets as widgets
 
+from ashrae import loading
+
 from fastai.tabular.all import *
 
 import tqdm
@@ -28,9 +30,11 @@ from pandas.tseries.holiday import USFederalHolidayCalendar as us_calendar
 import math
 from loguru import logger
 
+from scipy import stats
+
 # Cell
 def split_dataset(X:pd.DataFrame, split_kind:str='random',
-                  train_frac:float=8, t_train:pd.DataFrame=None):
+                  train_frac:float=.8, t_train:pd.DataFrame=None):
 
     def random_split():
         n_train = int(len(X)*train_frac)
@@ -339,6 +343,25 @@ def remove_outliers(self:Processor, f:float=10, dep_var:str='meter_reading'):
 
     logger.info(f'Outliers: removing {(~ok).sum()} data points = {(~ok).sum()/len(ok)*100:.2f} %')
     self.df_core = self.df_core.loc[ok,:].drop(columns=['threshold'])
+    return self.df_core
+
+# Cell
+@patch
+def add_random_noise_features(self:Processor, col:str='random_noise',
+                              noise_func:typing.Callable=lambda x: stats.norm.rvs(size=x, loc=0, scale=1),
+                              noise_type:str='cont'):
+    assert noise_type in ['cont', 'cat']
+    if self.test_run: return
+    n = len(self.df_core)
+    self.df_core[col] = noise_func(n)
+
+    if noise_type == 'cont':
+        self.conts.append(col)
+        logger.info(f'Added noise feature: \n\tcontinuous: {[col]}')
+    else:
+        self.cats.append(col)
+        logger.info(f'Added noise feature: \n\tcategorical: {[col]}')
+
     return self.df_core
 
 # Cell

@@ -28,9 +28,8 @@ CSV_NAMES_MAP = {'building_metadata.csv':'building',
                  'ashrae-energy-prediction-publicleaderboard.csv': 'public-leaderboard'}
 
 @typed
-def get_csvs(data_path:Path=None, csv_names_map:typing.Dict[str,str]=None) -> dict:
-    if data_path is None: data_path = DATA_PATH
-    csv_names = CSV_NAMES_MAP if csv_names_map is None else csv_names_map
+def get_csvs(data_path:Path=DATA_PATH, csv_names_map:dict={}) -> dict:
+    csv_names = CSV_NAMES_MAP if len(csv_names_map) == 0 else csv_names_map
     csvs = (data_path.ls()
             .filter(lambda x: x.name.endswith('.csv'))
             .map_dict(lambda x: csv_names.get(x.name, None)))
@@ -82,8 +81,7 @@ def test_meter_train_and_test_set(df_train:pd.DataFrame, df_test:pd.DataFrame):
 
 # Cell
 @typed
-def get_building_data(path:Path=None) -> pd.DataFrame:
-    if path is None: path = Path('../data/building_metadata.csv')
+def get_building_data(path:Path=DATA_PATH/'building_metadata.csv') -> pd.DataFrame:
     # TODO: year_built and floor_count actually are discrete values but contain nans
     # test if 'Int' dtype would work or if it breaks the things downstream
     logger.info(f'Loading building data: {path}')
@@ -102,8 +100,7 @@ def test_building(df_building:pd.DataFrame, df_core:pd.DataFrame):
 
 # Cell
 @typed
-def get_weather_data(path:Path=None) -> pd.DataFrame:
-    if path is None: path = Path('../data/weather_train.csv')
+def get_weather_data(path:Path=DATA_PATH/'weather_train.csv') -> pd.DataFrame:
     # TODO: cloud_coverage, wind_direction could be Int
     logger.info(f'Loading weather data: {path}')
     df_weather = pd.read_csv(path, parse_dates=['timestamp'])
@@ -121,9 +118,8 @@ def test_weather(df_weather:pd.DataFrame, df_building:pd.DataFrame):
 
 # Cell
 @typed
-def load_all(data_path:Path=None) -> dict:
+def load_all(data_path:Path=DATA_PATH) -> dict:
     'Locates csvs, loads them and performs basic sanity checks'
-    if data_path is None: data_path = DATA_PATH
     # locating csvs
     csvs = get_csvs(data_path)
 
