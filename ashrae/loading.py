@@ -16,8 +16,8 @@ from fastai.tabular.all import *
 
 # Cell
 DATA_PATH = Path("../data")
-N_TRAIN = 100_000 # number of samples to load for the train set
-N_TEST = 100_000 # number of samples to load for the test set
+N_TRAIN = 10_000 # number of samples to load for the train set
+N_TEST = 10_000 # number of samples to load for the test set
 
 # Cell
 CSV_NAMES_MAP = {'building_metadata.csv':'building',
@@ -70,8 +70,8 @@ def show_nans(df:pd.DataFrame) -> pd.DataFrame:
 def test_meter_train_and_test_set(df_train:pd.DataFrame, df_test:pd.DataFrame):
     assert len(df_train) == (20216100 if N_TRAIN == -1 else N_TRAIN)
     assert len(df_test) == (41697600 if N_TEST == -1 else N_TEST)
-    if N_TRAIN > 0 and N_TEST > 0:
-        assert set(df_train['meter'].unique()) == set(df_test['meter'].unique())
+    assert set(df_train['meter'].unique()) == set(df_test['meter'].unique())
+    if N_TRAIN > 20216100 and N_TEST > 41697600:
         assert set(df_train['building_id'].unique()) == set(df_test['building_id'].unique())
     train_nans = show_nans(df_train)
     assert np.allclose(train_nans['# NaNs'].values, 0)
@@ -94,7 +94,6 @@ def test_building(df_building:pd.DataFrame, df_core:pd.DataFrame):
     assert df_building['building_id'].nunique() == len(df_building)
     if N_TRAIN == -1: assert set(df_core['building_id'].unique()) == set(df_building['building_id'].unique())
     building_nans = show_nans(df_building)
-    display(building_nans)
     assert np.allclose(building_nans['# NaNs'].values, [1094, 774, 0, 0, 0, 0])
     logger.info('Passed basic building info test')
 
@@ -111,7 +110,6 @@ def get_weather_data(path:Path=DATA_PATH/'weather_train.csv') -> pd.DataFrame:
 def test_weather(df_weather:pd.DataFrame, df_building:pd.DataFrame):
     assert set(df_weather['site_id'].unique()) == set(df_building['site_id'].unique())
     weather_nans = show_nans(df_weather)
-    display(weather_nans)
     assert weather_nans.loc['site_id', '# NaNs'] == 0
     assert weather_nans.loc['timestamp', '# NaNs'] == 0
     logger.info('Passed basic weather tests')

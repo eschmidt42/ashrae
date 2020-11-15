@@ -15,7 +15,7 @@ import typing
 import pickle
 import ipywidgets as widgets
 
-from ashrae import loading
+from ashrae import loading, inspection
 
 from fastai.tabular.all import *
 

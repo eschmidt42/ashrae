@@ -50,6 +50,7 @@ def train_predict(df:pd.DataFrame, var_names:dict,
 
         _X = to.xs.loc[~mask, :].iloc[:n_samples_train]
         _y = to.ys.loc[~mask, y_col].iloc[:n_samples_train]
+        print(_X['primary_use'].values[:5])
         m.fit(_X.values, _y.values)
 
         _X = to.xs.loc[mask, :].iloc[:n_samples_valid]
