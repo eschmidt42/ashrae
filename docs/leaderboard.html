@@ -36,40 +36,6 @@ nb_path: "nbs/leaderboard.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span><span class="o">*</span><span class="mi">11</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span><span class="o">/</span><span class="mi">21</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
 <span class="o">%</span><span class="k">autoreload</span> 2
 </pre></div>
@@ -120,6 +86,29 @@ nb_path: "nbs/leaderboard.ipynb"
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>2020-11-22 07:54:12.722 | INFO     | ashrae.loading:get_csvs:36 - Collected csv paths: {Path(&#39;../data/weather_test.csv&#39;): &#39;weather_test&#39;, Path(&#39;../data/sample_submission.csv&#39;): None, Path(&#39;../data/my_submission.csv&#39;): None, Path(&#39;../data/test.csv&#39;): &#39;test&#39;, Path(&#39;../data/train.csv&#39;): &#39;train&#39;, Path(&#39;../data/ashrae-energy-prediction-publicleaderboard.csv&#39;): &#39;public-leaderboard&#39;, Path(&#39;../data/weather_train.csv&#39;): &#39;weather_train&#39;, Path(&#39;../data/building_metadata.csv&#39;): &#39;building&#39;}
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>CPU times: user 0 ns, sys: 2.59 ms, total: 2.59 ms
+Wall time: 1.91 ms
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -138,6 +127,83 @@ nb_path: "nbs/leaderboard.ipynb"
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TeamId</th>
+      <th>TeamName</th>
+      <th>SubmissionDate</th>
+      <th>Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3794710</td>
+      <td>Marco Vasquez E</td>
+      <td>2019-10-16 05:08:39</td>
+      <td>4.077</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>3794722</td>
+      <td>sneaky goose</td>
+      <td>2019-12-09 11:28:50</td>
+      <td>1.071</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3794730</td>
+      <td>Kostiantyn &amp; Vladyslav</td>
+      <td>2019-11-12 20:45:47</td>
+      <td>1.071</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3794765</td>
+      <td>Isamu &amp; Matt</td>
+      <td>2019-12-19 21:50:14</td>
+      <td>0.938</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3794772</td>
+      <td>Energy_leakage</td>
+      <td>2019-11-25 11:13:26</td>
+      <td>0.995</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -152,6 +218,22 @@ nb_path: "nbs/leaderboard.ipynb"
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(3591, 3591)</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -205,6 +287,86 @@ nb_path: "nbs/leaderboard.ipynb"
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>CPU times: user 9.56 ms, sys: 0 ns, total: 9.56 ms
+Wall time: 65.1 ms
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Score</th>
+      <th>Count</th>
+      <th>Cumulative share (%)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.931</td>
+      <td>1</td>
+      <td>0.027847</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.932</td>
+      <td>2</td>
+      <td>0.083542</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.933</td>
+      <td>1</td>
+      <td>0.111390</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.934</td>
+      <td>2</td>
+      <td>0.167084</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.935</td>
+      <td>1</td>
+      <td>0.194932</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
     {% endraw %}
 
@@ -219,6 +381,33 @@ nb_path: "nbs/leaderboard.ipynb"
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>count    940.000000
+mean       1.822522
+std        1.142008
+min        0.931000
+5%         0.977950
+10%        1.029800
+25%        1.176750
+50%        1.444500
+75%        2.135250
+95%        3.725650
+max       16.031000
+Name: Score, dtype: float64</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -268,6 +457,81 @@ nb_path: "nbs/leaderboard.ipynb"
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-14-b6cf4372b7be&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>px<span class="ansi-blue-fg">.</span>line<span class="ansi-blue-fg">(</span>dis<span class="ansi-blue-fg">,</span> x<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;Score&#39;</span><span class="ansi-blue-fg">,</span> y<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;Cumulative share (%)&#39;</span><span class="ansi-blue-fg">,</span> title<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;Cumulative distribution of public leaderboard scores&#39;</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>show<span class="ansi-blue-fg">(</span>renderer<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#39;png&#39;</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">/opt/conda/envs/py38_fastai/lib/python3.8/site-packages/plotly/basedatatypes.py</span> in <span class="ansi-cyan-fg">show</span><span class="ansi-blue-fg">(self, *args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   3147</span>         <span class="ansi-green-fg">import</span> plotly<span class="ansi-blue-fg">.</span>io <span class="ansi-green-fg">as</span> pio
+<span class="ansi-green-intense-fg ansi-bold">   3148</span> 
+<span class="ansi-green-fg">-&gt; 3149</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">return</span> pio<span class="ansi-blue-fg">.</span>show<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   3150</span> 
+<span class="ansi-green-intense-fg ansi-bold">   3151</span>     <span class="ansi-green-fg">def</span> to_json<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/opt/conda/envs/py38_fastai/lib/python3.8/site-packages/plotly/io/_renderers.py</span> in <span class="ansi-cyan-fg">show</span><span class="ansi-blue-fg">(fig, renderer, validate, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    375</span> 
+<span class="ansi-green-intense-fg ansi-bold">    376</span>     <span class="ansi-red-fg"># Mimetype renderers</span>
+<span class="ansi-green-fg">--&gt; 377</span><span class="ansi-red-fg">     </span>bundle <span class="ansi-blue-fg">=</span> renderers<span class="ansi-blue-fg">.</span>_build_mime_bundle<span class="ansi-blue-fg">(</span>fig_dict<span class="ansi-blue-fg">,</span> renderers_string<span class="ansi-blue-fg">=</span>renderer<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    378</span>     <span class="ansi-green-fg">if</span> bundle<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    379</span>         <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> ipython_display<span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/opt/conda/envs/py38_fastai/lib/python3.8/site-packages/plotly/io/_renderers.py</span> in <span class="ansi-cyan-fg">_build_mime_bundle</span><span class="ansi-blue-fg">(self, fig_dict, renderers_string, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    295</span>                         setattr<span class="ansi-blue-fg">(</span>renderer<span class="ansi-blue-fg">,</span> k<span class="ansi-blue-fg">,</span> v<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    296</span> 
+<span class="ansi-green-fg">--&gt; 297</span><span class="ansi-red-fg">                 </span>bundle<span class="ansi-blue-fg">.</span>update<span class="ansi-blue-fg">(</span>renderer<span class="ansi-blue-fg">.</span>to_mimebundle<span class="ansi-blue-fg">(</span>fig_dict<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    298</span> 
+<span class="ansi-green-intense-fg ansi-bold">    299</span>         <span class="ansi-green-fg">return</span> bundle
+
+<span class="ansi-green-fg">/opt/conda/envs/py38_fastai/lib/python3.8/site-packages/plotly/io/_base_renderers.py</span> in <span class="ansi-cyan-fg">to_mimebundle</span><span class="ansi-blue-fg">(self, fig_dict)</span>
+<span class="ansi-green-intense-fg ansi-bold">    125</span> 
+<span class="ansi-green-intense-fg ansi-bold">    126</span>     <span class="ansi-green-fg">def</span> to_mimebundle<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> fig_dict<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 127</span><span class="ansi-red-fg">         image_bytes = to_image(
+</span><span class="ansi-green-intense-fg ansi-bold">    128</span>             fig_dict<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    129</span>             format<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>format<span class="ansi-blue-fg">,</span>
+
+<span class="ansi-green-fg">/opt/conda/envs/py38_fastai/lib/python3.8/site-packages/plotly/io/_kaleido.py</span> in <span class="ansi-cyan-fg">to_image</span><span class="ansi-blue-fg">(fig, format, width, height, scale, validate, engine)</span>
+<span class="ansi-green-intense-fg ansi-bold">    101</span>         <span class="ansi-green-fg">from</span> <span class="ansi-blue-fg">.</span>_orca <span class="ansi-green-fg">import</span> to_image <span class="ansi-green-fg">as</span> to_image_orca
+<span class="ansi-green-intense-fg ansi-bold">    102</span> 
+<span class="ansi-green-fg">--&gt; 103</span><span class="ansi-red-fg">         return to_image_orca(
+</span><span class="ansi-green-intense-fg ansi-bold">    104</span>             fig<span class="ansi-blue-fg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    105</span>             format<span class="ansi-blue-fg">=</span>format<span class="ansi-blue-fg">,</span>
+
+<span class="ansi-green-fg">/opt/conda/envs/py38_fastai/lib/python3.8/site-packages/plotly/io/_orca.py</span> in <span class="ansi-cyan-fg">to_image</span><span class="ansi-blue-fg">(fig, format, width, height, scale, validate)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1533</span>     <span class="ansi-red-fg"># Make sure orca sever is running</span>
+<span class="ansi-green-intense-fg ansi-bold">   1534</span>     <span class="ansi-red-fg"># -------------------------------</span>
+<span class="ansi-green-fg">-&gt; 1535</span><span class="ansi-red-fg">     </span>ensure_server<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1536</span> 
+<span class="ansi-green-intense-fg ansi-bold">   1537</span>     <span class="ansi-red-fg"># Handle defaults</span>
+
+<span class="ansi-green-fg">/opt/conda/envs/py38_fastai/lib/python3.8/site-packages/plotly/io/_orca.py</span> in <span class="ansi-cyan-fg">ensure_server</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">   1359</span>     <span class="ansi-red-fg"># Validate psutil</span>
+<span class="ansi-green-intense-fg ansi-bold">   1360</span>     <span class="ansi-green-fg">if</span> psutil <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1361</span><span class="ansi-red-fg">         raise ValueError(
+</span><span class="ansi-green-intense-fg ansi-bold">   1362</span>             &#34;&#34;&#34;\
+<span class="ansi-green-intense-fg ansi-bold">   1363</span> Image generation requires the psutil package<span class="ansi-blue-fg">.</span>
+
+<span class="ansi-red-fg">ValueError</span>: Image generation requires the psutil package.
+
+Install using pip:
+    $ pip install psutil
+
+Install using conda:
+    $ conda install psutil
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
