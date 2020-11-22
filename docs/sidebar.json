@@ -1,9 +1,11 @@
 {
   "ashrae": {
     "Overview": "/",
-    "Leaderboard": "leaderboard.html",
+    "Modelling & submitting": "all_meters_one_model.html",
+    "Testing features": "feature_testing.html",
     "Inspection of the data": "inspection.html",
-    "Preprocessing data": "preprocessing.html",
-    "Modelling & submitting": "modelling.html"
+    "Leaderboard": "leaderboard.html",
+    "Loading the data": "loading.html",
+    "Preprocessing data": "preprocessing.html"
   }
 }
