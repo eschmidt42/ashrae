@@ -2,69 +2,55 @@
 > Building models for the Ashrae prediction challenge.
 
 
-## TODO
-* continue debugging `preprocessing.ipynb`: high resource demand with `nbdev_test_nbs`, figure out why and fix
-
 ## Configuring
 
 Defining wether to process the test set (warning, this alone takes 12+ minutes) and submit the results to kaggel (you will need your credentials set up).
 
-```python
+```
 do_test = True
 do_submit = False
 ```
 
 Defining where the csv files are located
 
-```python
+```
 loading.DATA_PATH = Path("../data")
 ```
 
 ## Getting the data from Kaggle
 
-```python
-# !kaggle competitions download -c ashrae-energy-prediction -p {data_path}
 ```
-
-```python
-# !unzip {data_path}/ashrae-energy-prediction.zip -d {data_path}/
-```
-
-```python
-# !kaggle competitions leaderboard -c ashrae-energy-prediction -p {data_path} --download
-```
-
-```python
-# !unzip {data_path}/ashrae-energy-prediction.zip -d {data_path}/
+!kaggle competitions download -c ashrae-energy-prediction -p {data_path}
+!kaggle competitions leaderboard -c ashrae-energy-prediction -p {data_path} --download
 ```
 
 ## Loading
 
-```python
+```
 %%time
 loading.N_TRAIN = 100_000
 loading.N_TEST = 100_000
 ```
 
-```python
+```
 %%time
 csvs = loading.get_csvs()
 csvs
 ```
 
-```python
+```
 %%time
 ashrae_data = loading.load_all()
 ```
 
 ## Inspecting the leaderboard
 
-```python
+```
 df_leaderboard = pd.read_csv(csvs['public-leaderboard'], parse_dates=['SubmissionDate'])
 df_leaderboard.head()
 ```
 
-```python
+```
 %%time
 dis = leaderboard.get_leaderboard_distribution(df_leaderboard)
 dis['Score'].describe(percentiles=[.05, .1, .25, .5, .75, .95])
@@ -72,7 +58,7 @@ dis['Score'].describe(percentiles=[.05, .1, .25, .5, .75, .95])
 
 ## Building features
 
-```python
+```
 %%time
 processor = preprocessing.Processor() 
 tfms_config = {
@@ -97,7 +83,7 @@ if do_test:
 
 ## Sampling from `df`
 
-```python
+```
 %%time
 n = len(df)
 
@@ -119,7 +105,7 @@ print(f'using {len(df)} samples = {len(df)/n*100:.2f} %')
 
 ## Preparing the data for modelling
 
-```python
+```
 %%time
 # t_train = pd.read_parquet(data_path/'t_train.parquet')
 t_train = None
@@ -132,13 +118,13 @@ split_kind = 'time_split_day'
 train_frac = .9
 ```
 
-```python
+```
 splits = preprocessing.split_dataset(df, split_kind=split_kind, train_frac=train_frac,
                                      t_train=t_train)
 print(f'sets {len(splits)}, train {len(splits[0])} = {len(splits[0])/len(df):.4f}, valid {len(splits[1])} = {len(splits[1])/len(df):.4f}')
 ```
 
-```python
+```
 %%time
 procs = [Categorify, FillMissing, Normalize]
 to = feature_testing.get_tabular_object(df,
@@ -147,7 +133,7 @@ to = feature_testing.get_tabular_object(df,
                                         procs=procs)
 ```
 
-```python
+```
 %%time
 train_bs = 1000
 val_bs = 1000
@@ -155,7 +141,7 @@ val_bs = 1000
 dls = to.dataloaders(bs=train_bs, val_bs=val_bs)
 ```
 
-```python
+```
 %%time
 test_bs = 1000
 
@@ -165,7 +151,7 @@ if do_test:
 
 ## Training a neural net using `tabular_learner`
 
-```python
+```
 y_range = (-.1, 17)
 
 layers = [50, 20]
@@ -183,16 +169,12 @@ learn = tabular_learner(dls, y_range=y_range,
 run = -1 # a counter for `fit_one_cycle` executions
 ```
 
-```python
-# learn.lr_find()
 ```
-
-```python
 %%time
 learn.fit_one_cycle(5, lr_max=1e-2)
 ```
 
-```python
+```
 learn.recorder.plot_loss()
 ```
 
@@ -200,7 +182,7 @@ learn.recorder.plot_loss()
 
 ### Basic score
 
-```python
+```
 %%time
 y_valid_pred, y_valid_true = learn.get_preds()
 y_valid_pred, y_valid_true = modelling.cnr(y_valid_pred), modelling.cnr(y_valid_true)
@@ -208,14 +190,14 @@ y_valid_pred, y_valid_true = modelling.cnr(y_valid_pred), modelling.cnr(y_valid_
 
 TODO: running the below cell produces an 'IndexError: index out of range in self' thing for `learn.get_preds(dl=test_dl)` although the code seems identical to the one in `all_meters_one_model.ipynb` and it runs there (well at least it did ... testing now shows that also broke for some reason).  
 
-```python
+```
 %%time
 if do_test:
     y_test_pred, _ = learn.get_preds(dl=test_dl)
     y_test_pred = modelling.cnr(y_test_pred)
 ```
 
-```python
+```
 nb_score = modelling.evaluate_torch(torch.tensor(y_valid_true), 
                                     torch.tensor(y_valid_pred)).item()
 print(f'fastai loss {nb_score:.4f}')
@@ -223,13 +205,13 @@ print(f'fastai loss {nb_score:.4f}')
 
 ### Histogram of  `dep_var`
 
-```python
+```
 feature_testing.hist_plot_preds(modelling.pick_random(y_valid_true, 50), 
                                 modelling.pick_random(y_valid_pred, 50), 
                                 label0='truth', label1='prediction')
 ```
 
-```python
+```
 if do_test:
     feature_testing.hist_plot_preds(modelling.pick_random(y_valid_true), 
                                     modelling.pick_random(y_test_pred), 
@@ -239,20 +221,20 @@ if do_test:
 
 ### Confidently wrong predictions by `building_id`
 
-```python
+```
 %%time
 miss_cols = [v for v in ['building_id', 'meter','timestamp'] if v not in to.valid.xs.columns]
 tmp = to.valid.xs.join(df.loc[:,miss_cols]) if len(miss_cols)>0 else to.valid.xs
 bwt = feature_testing.BoldlyWrongTimeseries(tmp, y_valid_true, y_valid_pred)
 ```
 
-```python
+```
 bwt.run_boldly()
 ```
 
 ## Submission
 
-```python
+```
 %%time
 if do_test and do_submit:
     y_test_pred_original = torch.exp(tensor(y_test_pred)) - 1
@@ -265,13 +247,13 @@ if do_test and do_submit:
     assert len(y_out) == 41697600
 ```
 
-```python
+```
 %%time
 if do_submit:
     y_out.to_csv(data_path/'my_submission.csv')
 ```
 
-```python
+```
 # message = ['random forest', '500 obs/bid', 'all features', f'nb score {nb_score:.4f}']
 message = ['lightgbm', '500 obs/bid', '100 rounds', '42 leaves', 'lr .5', f'nb score {nb_score:.4f}']
 # message = ['tabular_learner', '500 obs/bid', 'all features', f'layers {layers}, embed_p .1, ps [.1,.1,.1]', f'nb score {nb_score:.4f}']
@@ -279,7 +261,7 @@ message = ' + '.join(message)
 message
 ```
 
-```python
+```
 if do_test and do_submit:
     print('Submitting...')
     !kaggle competitions submit -c ashrae-energy-prediction -f '{data_path}/my_submission.csv' -m '{message}'

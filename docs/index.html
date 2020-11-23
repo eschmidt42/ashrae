@@ -31,15 +31,6 @@ nb_path: "nbs/index.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="TODO">TODO<a class="anchor-link" href="#TODO"> </a></h2><ul>
-<li>continue debugging <code>preprocessing.ipynb</code>: high resource demand with <code>nbdev_test_nbs</code>, figure out why and fix</li>
-</ul>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Configuring">Configuring<a class="anchor-link" href="#Configuring"> </a></h2>
 </div>
 </div>
@@ -99,74 +90,15 @@ nb_path: "nbs/index.ipynb"
 </div>
 </div>
 </div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
+<pre><code>!kaggle competitions download -c ashrae-energy-prediction -p {data_path}
+!kaggle competitions leaderboard -c ashrae-energy-prediction -p {data_path} --download</code></pre>
 
 </div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
 </div>
 </div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Loading">Loading<a class="anchor-link" href="#Loading"> </a></h2>
@@ -496,23 +428,6 @@ nb_path: "nbs/index.ipynb"
                         <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> 
                         <span class="n">loss_func</span><span class="o">=</span><span class="n">modelling</span><span class="o">.</span><span class="n">evaluate_torch</span><span class="p">)</span>
 <span class="n">run</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1"># a counter for `fit_one_cycle` executions</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
